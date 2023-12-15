@@ -6,7 +6,10 @@ using System.Collections.Generic;
 namespace LoxApp
 {
 	public class Lox {
+
+		private static readonly Interpreter interpreter = new Interpreter();
 		static bool hadError = false;
+		public static bool hadRuntimeError = false;
 
 		public class Program{
 			static void Main(string[]args){
@@ -50,15 +53,26 @@ namespace LoxApp
 			Parser parser = new Parser(tokens);
 			Expr expression = parser.parse();
 
-			if (hadError) return;
+			// if (hadError) return;
+			interpreter.interpret(expression);
 			Console.WriteLine(new AstPrinter().Print(expression));
 
-			if(hadError) System.Environment.Exit(1);
-
+			// if(hadError) System.Environment.Exit(1);
+			if (hadRuntimeError)
+			{
+				System.Environment.Exit(70);//70? //1?
+			}
 		}
 
 		public static void error(int line, string message){
 			report(line, "", message);
+		}
+
+		public static void runtimeError(RuntimeError error)
+		{
+			Console.Error.WriteLine(error.Message +
+				$"\n[line {error.token.line}]");
+			hadRuntimeError = true;
 		}
 
 		public static void report(int line, string where, string message){

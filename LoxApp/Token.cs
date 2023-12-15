@@ -2,7 +2,7 @@ using System;
 
 namespace LoxApp
 {
-    class Token
+    public class Token
     {
         public TokenType type;
         public string lexeme;
