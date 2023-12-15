@@ -12,6 +12,7 @@ namespace Tool1
             //     // Environment.Exit(1);
             // }
             string outputDir = @"C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp";
+            //hardcode your path here
             // string outputDir = args[0];
 
             List<string> Arrays = new List<string> { 
@@ -55,7 +56,7 @@ namespace Tool1
             writer.WriteLine("  public interface Visitor<R> {");
             foreach (string type in types) {
             string typeName = type.Split(":")[0].Trim();
-            writer.WriteLine("    R Visit" + typeName + baseName + "(" +
+            writer.WriteLine("    public R Visit" + typeName + baseName + "(" +
                 typeName + " " + baseName.ToLower() + ");");
             }
             writer.WriteLine("  }");
@@ -82,7 +83,7 @@ namespace Tool1
             writer.WriteLine("    }");
             writer.WriteLine();
             foreach (string field in fields) {
-                writer.WriteLine("    readonly " + field + ";");
+                writer.WriteLine("    public readonly " + field + ";");
             }
             writer.WriteLine("  }");
         }

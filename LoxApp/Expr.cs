@@ -5,10 +5,10 @@ namespace LoxApp
     abstract class Expr
     {
   public interface Visitor<R> {
-    R VisitBinaryExpr(Binary expr);
-    R VisitGroupingExpr(Grouping expr);
-    R VisitLiteralExpr(Literal expr);
-    R VisitUnaryExpr(Unary expr);
+    public R VisitBinaryExpr(Binary expr);
+    public R VisitGroupingExpr(Grouping expr);
+    public R VisitLiteralExpr(Literal expr);
+    public R VisitUnaryExpr(Unary expr);
   }
   public class Binary : Expr {
     public Binary(Expr left, Token @operator, Expr right) {
@@ -21,9 +21,9 @@ namespace LoxApp
         return visitor.VisitBinaryExpr(this);
     }
 
-    readonly Expr left;
-    readonly Token @operator;
-    readonly Expr right;
+    public readonly Expr left;
+    public readonly Token @operator;
+    public readonly Expr right;
   }
   public class Grouping : Expr {
     public Grouping(Expr expression) {
@@ -34,7 +34,7 @@ namespace LoxApp
         return visitor.VisitGroupingExpr(this);
     }
 
-    readonly Expr expression;
+    public readonly Expr expression;
   }
   public class Literal : Expr {
     public Literal(Object value) {
@@ -45,7 +45,7 @@ namespace LoxApp
         return visitor.VisitLiteralExpr(this);
     }
 
-    readonly Object value;
+    public readonly Object value;
   }
   public class Unary : Expr {
     public Unary(Token @operator, Expr right) {
@@ -57,8 +57,8 @@ namespace LoxApp
         return visitor.VisitUnaryExpr(this);
     }
 
-    readonly Token @operator;
-    readonly Expr right;
+    public readonly Token @operator;
+    public readonly Expr right;
   }
 
   public abstract R Accept<R>(Visitor<R> visitor);

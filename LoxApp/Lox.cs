@@ -7,17 +7,20 @@ namespace LoxApp
 {
 	public class Lox {
 		static bool hadError = false;
-		static void Main(string[]args){
-			
-			if(args.Length > 1){
-				Console.WriteLine("Usage: jlox [script]");
-				System.Environment.Exit(1);
-			}
-			else if(args.Length == 1){
-				runFile(args[0]);
-			}
-			else{
-				runPrompt();
+
+		public class Program{
+			static void Main(string[]args){
+				
+				if(args.Length > 1){
+					Console.WriteLine("Usage: jlox [script]");
+					System.Environment.Exit(1);
+				}
+				else if(args.Length == 1){
+					runFile(args[0]);
+				}
+				else{
+					runPrompt();
+				}
 			}
 		}
 
