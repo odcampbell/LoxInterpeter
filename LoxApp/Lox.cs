@@ -47,10 +47,11 @@ namespace LoxApp
 			Scanner scanner = new Scanner(source);
 			List<Token> tokens = scanner.ScanTokens();
 			
-			foreach (Token token in tokens)
-			{
-				Console.WriteLine(token);
-			}
+			Parser parser = new Parser(tokens);
+			Expr expression = parser.parse();
+
+			if (hadError) return;
+			Console.WriteLine(new AstPrinter().Print(expression));
 
 			if(hadError) System.Environment.Exit(1);
 
@@ -60,7 +61,7 @@ namespace LoxApp
 			report(line, "", message);
 		}
 
-		private static void report(int line, string where, string message){
+		public static void report(int line, string where, string message){
 			Console.Error.WriteLine("[line " + line + "] Error" + where + ": " + message);
 			hadError = true;
 		}
