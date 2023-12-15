@@ -12,9 +12,6 @@ namespace Tool1
             //     // Environment.Exit(1);
             // }
             string outputDir = @"C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp";
-            // C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp
-            // C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp
-            // 
             // string outputDir = args[0];
 
             List<string> Arrays = new List<string> { 
@@ -35,6 +32,8 @@ namespace Tool1
                 writer.WriteLine("{");
                 writer.WriteLine("    abstract class " + baseName);
                 writer.WriteLine("    {");
+                DefineVisitor(writer, baseName, types);
+
                 foreach (string type in types)
                 {
                     string[] typeParts = type.Split(':');
@@ -42,9 +41,24 @@ namespace Tool1
                     string fields = typeParts[1].Trim();
                     defineType(writer, baseName, className, fields);
                 }
+
+                writer.WriteLine();
+                writer.WriteLine("  public abstract R Accept<R>(Visitor<R> visitor);");
+
                 writer.WriteLine("    }");
                 writer.WriteLine("}");
             }
+        }
+
+        private static void DefineVisitor(
+            StreamWriter writer, string baseName, List<string> types) {
+            writer.WriteLine("  public interface Visitor<R> {");
+            foreach (string type in types) {
+            string typeName = type.Split(":")[0].Trim();
+            writer.WriteLine("    R Visit" + typeName + baseName + "(" +
+                typeName + " " + baseName.ToLower() + ");");
+            }
+            writer.WriteLine("  }");
         }
 
         private static void defineType(
@@ -61,7 +75,11 @@ namespace Tool1
                 writer.WriteLine("      this." + name + " = " + name + ";");
             }
             writer.WriteLine("    }");
-            
+            writer.WriteLine();
+            writer.WriteLine("    public override R Accept<R>(Visitor<R> visitor) {");
+            writer.WriteLine("        return visitor.Visit" +
+                className + baseName + "(this);");
+            writer.WriteLine("    }");
             writer.WriteLine();
             foreach (string field in fields) {
                 writer.WriteLine("    readonly " + field + ";");
