@@ -51,11 +51,11 @@ namespace LoxApp
 			List<Token> tokens = scanner.ScanTokens();
 			
 			Parser parser = new Parser(tokens);
-			Expr expression = parser.parse();
+			List<Stmt> statements = parser.parse();
 
 			// if (hadError) return;
-			interpreter.interpret(expression);
-			Console.WriteLine(new AstPrinter().Print(expression));
+			interpreter.interpret(statements);
+			// Console.WriteLine(new AstPrinter().Print(expression));
 
 			// if(hadError) System.Environment.Exit(1);
 			if (hadRuntimeError)

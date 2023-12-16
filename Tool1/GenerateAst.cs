@@ -20,8 +20,13 @@ namespace Tool1
                 "Grouping : Expr expression",
                 "Literal  : Object value",
                 "Unary    : Token @operator, Expr right" };
-
             DefineAst(outputDir, "Expr", Arrays);
+                
+            List<string> Arrays2 = new List<string> { 
+                "Expression : Expr expression",
+                "Print      : Expr expression"};
+
+            DefineAst(outputDir, "Stmt", Arrays2);
         }
 
         private static void DefineAst(string outputDir, string baseName, List<string> types){

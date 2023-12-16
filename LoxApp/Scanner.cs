@@ -148,7 +148,7 @@ namespace LoxApp
             
             advance();
             
-            string value = source.Substring(start + 1, current - 1);
+            string value = source.Substring(start + 1, current - 1  - (start + 1));
             addToken(STRING, value);
         }
 

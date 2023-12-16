@@ -1,21 +1,23 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace LoxApp
 {
-    class Interpreter : Expr.Visitor<object>
+    class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object>
     {
+        System.Type t = typeof(void); 
         public object VisitLiteralExpr(Expr.Literal expr){
             return expr.value;
         }
 
-        public void interpret(Expr expression){
+        public void interpret(List<Stmt> statements){
             try
             {
-                object value = evaluate(expression);
-                Console.WriteLine(Stringify(value));
+                foreach (Stmt statement in statements){
+                    execute(statement);
+                }
             }
-            catch (RuntimeError error)
-            {
+            catch (RuntimeError error){
                 Lox.runtimeError(error);
             }
         }
@@ -75,6 +77,22 @@ namespace LoxApp
 
         private object evaluate(Expr expr){
             return expr.Accept(this);
+        }
+
+        private void execute(Stmt stmt){
+            stmt.Accept(this);
+        }
+
+        public object VisitExpressionStmt(Stmt.Expression stmt){
+            evaluate(stmt.expression);
+            return null;
+        }
+
+        public object VisitPrintStmt(Stmt.Print stmt)
+        {
+            object value = evaluate(stmt.expression);
+            Console.WriteLine(Stringify(value));
+            return null;
         }
 
         public object VisitBinaryExpr(Expr.Binary expr){

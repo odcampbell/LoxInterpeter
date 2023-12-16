@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace LoxApp
 {
-    abstract class Expr
+    abstract public class Expr
     {
   public interface Visitor<R> {
     public R VisitBinaryExpr(Binary expr);

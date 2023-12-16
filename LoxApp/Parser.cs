@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using static LoxApp.TokenType;
-using static LoxApp.Lox;
+// using static LoxApp.Lox;
 
 
 namespace LoxApp
 {
 
-    class Parser{
+    public class Parser{
         private class ParseError : SystemException {}
         private readonly List<Token> tokens;
         private int current = 0;
@@ -15,26 +15,33 @@ namespace LoxApp
             this.tokens = tokens;
         }
 
-          public Expr parse(){
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-#pragma warning disable CS0168 // Variable is declared but never used
-            try
+       public List<Stmt> parse(){
+            List<Stmt> statements = new List<Stmt>();
+            while (!isAtEnd())
             {
-                return expression();
+                statements.Add(statement());
             }
-            catch (ParseError error)
-            {
-#pragma warning disable CS8603 // Possible null reference return.
-                return null;
-#pragma warning restore CS8603 // Possible null reference return.
-            }
-#pragma warning restore CS0168 // Variable is declared but never used
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
+            return statements;
         }
-
-
         private Expr expression() {
             return equality();
+        }
+
+        private Stmt statement(){
+            if (match(PRINT)) return printStatement();
+            return expressionStatement();
+        }
+
+        private Stmt printStatement(){
+            Expr value = expression();
+            consume(TokenType.SEMICOLON, "Expect ';' after value.");
+            return new Stmt.Print(value);
+        }
+
+        private Stmt expressionStatement(){
+            Expr expr = expression();
+            consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+            return new Stmt.Expression(expr);
         }
 
         private Expr equality(){
