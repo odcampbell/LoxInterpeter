@@ -19,29 +19,84 @@ namespace LoxApp
             List<Stmt> statements = new List<Stmt>();
             while (!isAtEnd())
             {
-                statements.Add(statement());
+                statements.Add(declaration());
             }
             return statements;
         }
+
         private Expr expression() {
-            return equality();
+            return assignment();
         }
+
+        private Stmt declaration(){
+            try
+            {
+                if (match(TokenType.VAR)) return varDeclaration();
+                return statement();
+            }
+            catch (ParseError error)
+            {
+                Synchronize();
+                return null;
+            }
+        }
+
 
         private Stmt statement(){
             if (match(PRINT)) return printStatement();
+            if (match(LEFT_BRACE)) return new Stmt.Block(block());
             return expressionStatement();
         }
 
         private Stmt printStatement(){
             Expr value = expression();
-            consume(TokenType.SEMICOLON, "Expect ';' after value.");
+            consume(SEMICOLON, "Expect ';' after value.");
             return new Stmt.Print(value);
+        }
+
+
+        private Stmt varDeclaration(){
+            Token name = consume(IDENTIFIER, "Expect variable name.");
+            Expr initializer = null;
+            if (match(EQUAL))
+            {
+                initializer = expression();
+            }
+            consume(SEMICOLON, "Expect ';' after variable declaration.");
+            return new Stmt.Var(name, initializer);
         }
 
         private Stmt expressionStatement(){
             Expr expr = expression();
             consume(TokenType.SEMICOLON, "Expect ';' after expression.");
             return new Stmt.Expression(expr);
+        }
+
+        private List<Stmt> block(){
+            List<Stmt> statements = new List<Stmt>();
+            while (!check(RIGHT_BRACE) && !isAtEnd())
+            {
+                statements.Add(declaration());
+            }
+            consume(RIGHT_BRACE, "Expect '}' after block.");
+            return statements;
+        }
+
+
+        private Expr assignment(){
+            Expr expr = equality();
+            if (match(TokenType.EQUAL))
+            {
+                Token equals = previous();
+                Expr value = assignment();
+                if (expr is Expr.Variable variable)
+                {
+                    Token name = variable.name;
+                    return new Expr.Assign(name, value);
+                }
+                error(equals, "Invalid assignment target.");
+            }
+            return expr;
         }
 
         private Expr equality(){
@@ -123,16 +178,21 @@ namespace LoxApp
         {
             if (match(FALSE)) return new Expr.Literal(false);
             if (match(TRUE)) return new Expr.Literal(true);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             if (match(NIL)) return new Expr.Literal(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             if (match(NUMBER, STRING)){
-#pragma warning disable CS8604 // Dereference of a possibly null reference.
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            #pragma warning disable CS8604 // Dereference of a possibly null reference.
+            #pragma warning disable CS8602 // Dereference of a possibly null reference.
                     return new Expr.Literal(previous().literal);
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-#pragma warning restore CS8604 // Dereference of a possibly null reference.
+            #pragma warning restore CS8602 // Dereference of a possibly null reference.
+            #pragma warning restore CS8604 // Dereference of a possibly null reference.
                 }
+
+            if (match(IDENTIFIER)){
+                return new Expr.Variable(previous());
+            }
+
             
             if (match(LEFT_PAREN))
             {

@@ -41,6 +41,17 @@ namespace LoxApp
             return builder.ToString();
         }
 
+        public string VisitAssignExpr(Expr.Assign expr)
+        {
+            return Parenthesize(expr.@name.lexeme, expr.value);
+        }
+
+        public string VisitVariableExpr(Expr.Variable expr)
+        {
+            return Parenthesize(expr.@name.lexeme, expr);
+
+        }
+
         //    public static void Main(string[] args)
         //     {
         //         Expr expression = new Expr.Binary(

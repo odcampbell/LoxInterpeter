@@ -16,15 +16,19 @@ namespace Tool1
             // string outputDir = args[0];
 
             List<string> Arrays = new List<string> { 
+                "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token @operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
-                "Unary    : Token @operator, Expr right" };
+                "Unary    : Token @operator, Expr right",
+                "Variable : Token name" };
             DefineAst(outputDir, "Expr", Arrays);
                 
             List<string> Arrays2 = new List<string> { 
+                "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
-                "Print      : Expr expression"};
+                "Print      : Expr expression",
+                "Var        : Token name, Expr initializer"};
 
             DefineAst(outputDir, "Stmt", Arrays2);
         }
@@ -36,7 +40,7 @@ namespace Tool1
                 writer.WriteLine();
                 writer.WriteLine("namespace LoxApp");
                 writer.WriteLine("{");
-                writer.WriteLine("    abstract class " + baseName);
+                writer.WriteLine("    abstract public class " + baseName);
                 writer.WriteLine("    {");
                 DefineVisitor(writer, baseName, types);
 
