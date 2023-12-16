@@ -41,7 +41,9 @@ namespace LoxApp
             return builder.ToString();
         }
 
-        public string VisitAssignExpr(Expr.Assign expr)
+        //was bullied into making these by ASTPrinter, would not settle for any other forms
+        //so im not sure if these will have an acceptable or desired effect
+        public string VisitAssignExpr(Expr.Assign expr) 
         {
             return Parenthesize(expr.@name.lexeme, expr.value);
         }
@@ -50,6 +52,11 @@ namespace LoxApp
         {
             return Parenthesize(expr.@name.lexeme, expr);
 
+        }
+
+        public string VisitLogicalExpr(Expr.Logical expr)
+        {
+            return Parenthesize(expr.@operator.lexeme, expr.right);
         }
 
         //    public static void Main(string[] args)

@@ -31,7 +31,7 @@ namespace LoxApp
         private Stmt declaration(){
             try
             {
-                if (match(TokenType.VAR)) return varDeclaration();
+                if (match(VAR)) return varDeclaration();
                 return statement();
             }
             catch (ParseError error)
@@ -43,9 +43,70 @@ namespace LoxApp
 
 
         private Stmt statement(){
+            if (match(FOR)) return forStatement();
+            if (match(IF)) return ifStatement();
             if (match(PRINT)) return printStatement();
+            if (match(WHILE)) return whileStatement();
             if (match(LEFT_BRACE)) return new Stmt.Block(block());
             return expressionStatement();
+        }
+
+        private Stmt forStatement(){
+            consume(LEFT_PAREN, "Expect '(' after 'for'.");
+            Stmt initializer;
+            if (match(SEMICOLON)){
+                initializer = null;
+            }
+            else if (match(VAR)){
+                initializer = varDeclaration();
+            }
+            else{
+                initializer = expressionStatement();
+            }
+
+            Expr condition = null;
+            if (!check(SEMICOLON)) {
+                condition = expression();
+            }
+            consume(SEMICOLON, "Expect ';' after loop condition.");
+
+               Expr increment = null;
+                if (!check(RIGHT_PAREN)) {
+                    increment = expression();
+                }
+                consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+
+            Stmt body = statement();
+
+            if (increment != null){
+                body = new Stmt.Block(
+                    new List<Stmt> 
+                    { 
+                        body, 
+                        new Stmt.Expression(increment) 
+                    });
+            }
+
+            if (condition == null) condition = new Expr.Literal(true);
+            body = new Stmt.While(condition, body);
+
+            if (initializer != null){
+                body = new Stmt.Block(new List<Stmt> { initializer, body });
+            }
+            return body;
+        }
+
+        private Stmt ifStatement(){
+            consume(LEFT_PAREN, "Expect '(' after 'if'.");
+            Expr condition = expression();
+            consume(RIGHT_PAREN, "Expect ')' after if condition.");
+            Stmt thenBranch = statement();
+            Stmt elseBranch = null;
+            if (match(ELSE))
+            {
+                elseBranch = statement();
+            }
+            return new Stmt.If(condition, thenBranch, elseBranch);
         }
 
         private Stmt printStatement(){
@@ -66,9 +127,18 @@ namespace LoxApp
             return new Stmt.Var(name, initializer);
         }
 
+        private Stmt whileStatement(){
+            consume(LEFT_PAREN, "Expect '(' after 'while'.");
+            Expr condition = expression();
+            consume(RIGHT_PAREN, "Expect ')' after condition.");
+            Stmt body = statement();
+            return new Stmt.While(condition, body);
+        }
+
+
         private Stmt expressionStatement(){
             Expr expr = expression();
-            consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+            consume(SEMICOLON, "Expect ';' after expression.");
             return new Stmt.Expression(expr);
         }
 
@@ -84,8 +154,8 @@ namespace LoxApp
 
 
         private Expr assignment(){
-            Expr expr = equality();
-            if (match(TokenType.EQUAL))
+            Expr expr = or();
+            if (match(EQUAL))
             {
                 Token equals = previous();
                 Expr value = assignment();
@@ -99,9 +169,32 @@ namespace LoxApp
             return expr;
         }
 
+        private Expr or(){
+            Expr expr = and();
+            while (match(OR))
+            {
+                Token @operator = previous();
+                Expr right = and();
+                expr = new Expr.Logical(expr, @operator, right);
+            }
+            return expr;
+        }
+
+        private Expr and(){
+            Expr expr = equality();
+            while (match(AND))
+            {
+                Token @operator = previous();
+                Expr right = equality();
+                expr = new Expr.Logical(expr, @operator, right);
+            }
+            return expr;
+        }
+
+
         private Expr equality(){
             Expr expr = comparison();
-            while (match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL))
+            while (match(BANG_EQUAL, EQUAL_EQUAL))
             {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 Token operatorToken = previous();
@@ -163,13 +256,9 @@ namespace LoxApp
         private Expr unary(){
             if (match(BANG, MINUS))
             {
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 Token @operator = previous();
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
                 Expr right = unary();
-#pragma warning disable CS8604 // Possible null reference argument.
                     return new Expr.Unary(@operator, right);
-#pragma warning restore CS8604 // Possible null reference argument.
                 }
             return Primary();
         }
@@ -178,22 +267,15 @@ namespace LoxApp
         {
             if (match(FALSE)) return new Expr.Literal(false);
             if (match(TRUE)) return new Expr.Literal(true);
-            #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             if (match(NIL)) return new Expr.Literal(null);
-            #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             if (match(NUMBER, STRING)){
-            #pragma warning disable CS8604 // Dereference of a possibly null reference.
-            #pragma warning disable CS8602 // Dereference of a possibly null reference.
                     return new Expr.Literal(previous().literal);
-            #pragma warning restore CS8602 // Dereference of a possibly null reference.
-            #pragma warning restore CS8604 // Dereference of a possibly null reference.
-                }
+            }
 
             if (match(IDENTIFIER)){
                 return new Expr.Variable(previous());
             }
 
-            
             if (match(LEFT_PAREN))
             {
                 Expr expr = expression();
@@ -242,9 +324,7 @@ namespace LoxApp
         }
 
         private Token consume(TokenType type, string message){
-#pragma warning disable CS8603 // Possible null reference return.
             if (check(type)) return advance();
-#pragma warning restore CS8603 // Possible null reference return.
             throw error(peek(), message);
         }
 
@@ -256,7 +336,7 @@ namespace LoxApp
         }
 
         static void report(Token token, string message){
-            if (token.type == TokenType.EOF)
+            if (token.type == EOF)
             {
                 Lox.report(token.line, " at end", message);
             }
@@ -271,22 +351,20 @@ namespace LoxApp
             advance();
             while (!isAtEnd())
             {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                if (previous().type == TokenType.SEMICOLON)
+                if (previous().type == SEMICOLON)
                 {
                     return;
                 }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 switch (peek().type)
                 {
-                    case TokenType.CLASS:
-                    case TokenType.FUN:
-                    case TokenType.VAR:
-                    case TokenType.FOR:
-                    case TokenType.IF:
-                    case TokenType.WHILE:
-                    case TokenType.PRINT:
-                    case TokenType.RETURN:
+                    case CLASS:
+                    case FUN:
+                    case VAR:
+                    case FOR:
+                    case IF:
+                    case WHILE:
+                    case PRINT:
+                    case RETURN:
                         return;
                 }
                 advance();

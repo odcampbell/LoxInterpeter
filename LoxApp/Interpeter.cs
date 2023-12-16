@@ -12,6 +12,20 @@ namespace LoxApp
             return expr.value;
         }
 
+        public object VisitLogicalExpr(Expr.Logical expr)
+        {
+            object left = evaluate(expr.left);
+            if (expr.@operator.type == TokenType.OR)
+            {
+                if (isTruthy(left)) return left;
+            }
+            else
+            {
+                if (!isTruthy(left)) return left;
+            }
+            return evaluate(expr.right);
+        }
+
         public void interpret(List<Stmt> statements){
             try
             {
@@ -118,6 +132,17 @@ namespace LoxApp
             return null;
         }
 
+        public void VisitIfStmt(Stmt.If stmt){
+            if (isTruthy(evaluate(stmt.condition)))
+            {
+                execute(stmt.thenBranch);
+            }
+            else if (stmt.elseBranch != null)
+            {
+                execute(stmt.elseBranch);
+            }
+        }
+
         public object VisitPrintStmt(Stmt.Print stmt){
             object value = evaluate(stmt.expression);
             Console.WriteLine(Stringify(value));
@@ -133,6 +158,15 @@ namespace LoxApp
             environment.define(stmt.name.lexeme, value);
             return null;
         }
+
+        public object VisitWhileStmt(Stmt.While stmt){ //void
+            while (isTruthy(evaluate(stmt.condition)))
+            {
+                execute(stmt.body);
+            }
+            return null;
+        }
+
 
         public  object VisitAssignExpr(Expr.Assign expr){
             object value = evaluate(expr.value);
@@ -194,6 +228,10 @@ namespace LoxApp
             throw new RuntimeError(@operator, "Operands must be numbers.");
         }
 
+        object Stmt.Visitor<object>.VisitIfStmt(Stmt.If stmt)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

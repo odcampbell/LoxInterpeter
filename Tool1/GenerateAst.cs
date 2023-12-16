@@ -20,6 +20,7 @@ namespace Tool1
                 "Binary   : Expr left, Token @operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Object value",
+                "Logical  : Expr left, Token @operator, Expr right",
                 "Unary    : Token @operator, Expr right",
                 "Variable : Token name" };
             DefineAst(outputDir, "Expr", Arrays);
@@ -27,8 +28,11 @@ namespace Tool1
             List<string> Arrays2 = new List<string> { 
                 "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
+                "If         : Expr condition, Stmt thenBranch," +
+                            " Stmt elseBranch",
                 "Print      : Expr expression",
-                "Var        : Token name, Expr initializer"};
+                "Var        : Token name, Expr initializer",
+                "While      : Expr condition, Stmt body"};
 
             DefineAst(outputDir, "Stmt", Arrays2);
         }
