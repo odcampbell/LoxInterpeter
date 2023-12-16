@@ -8,7 +8,7 @@ namespace LoxApp
 	public class Lox {
 
 		private static readonly Interpreter interpreter = new Interpreter();
-		static bool hadError = false;
+		private static bool hadError = false;
 		public static bool hadRuntimeError = false;
 
 		public class Program{
@@ -30,6 +30,9 @@ namespace LoxApp
 		private static void runFile(string path){
 			byte[] bytes = File.ReadAllBytes(path);
 			run(System.Text.Encoding.Default.GetString(bytes));
+			if(hadError) System.Environment.Exit(1);
+			if (hadRuntimeError) System.Environment.Exit(1);//70? //1?
+
 		}
 
 		private static void runPrompt(){
@@ -57,11 +60,8 @@ namespace LoxApp
 			interpreter.interpret(statements);
 			// Console.WriteLine(new AstPrinter().Print(expression));
 
-			// if(hadError) System.Environment.Exit(1);
-			if (hadRuntimeError)
-			{
-				System.Environment.Exit(70);//70? //1?
-			}
+			if(hadError) System.Environment.Exit(1);
+			if (hadRuntimeError) System.Environment.Exit(70);//70? //1?
 		}
 
 		public static void error(int line, string message){
@@ -78,6 +78,16 @@ namespace LoxApp
 		public static void report(int line, string where, string message){
 			Console.Error.WriteLine("[line " + line + "] Error" + where + ": " + message);
 			hadError = true;
+		}
+
+		public static void error(Token token, string message){
+			if (token.type == TokenType.EOF){
+				report(token.line, " at end", message);
+			}
+			else
+			{
+				report(token.line, " at '" + token.lexeme + "'", message);
+			}
 		}
 
 	}

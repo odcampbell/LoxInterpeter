@@ -3,10 +3,20 @@ using System.Runtime.CompilerServices;
 
 namespace LoxApp
 {
-    class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object>
+    public class GlobalsLite : Environment {
+        public override string ToString() { return "<native fn>";}
+    }
+
+    public class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object>
     {
         // System.Type t = typeof(void); 
-        private Environment environment = new Environment();
+        public readonly Environment globals = new Environment();
+        private Environment environment;
+
+        public Interpreter(){
+            environment = globals;
+            globals.define("clock", new LoxCallable());
+        }
 
         public object VisitLiteralExpr(Expr.Literal expr){
             return expr.value;
@@ -49,7 +59,9 @@ namespace LoxApp
                     return -(double)right;
             }
 
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         
@@ -83,14 +95,18 @@ namespace LoxApp
             if (obj == null) return "nil";
 
             if (obj is double){
-                string text = obj.ToString();
+                string? text = obj.ToString();
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (text.EndsWith(".0"))
                 {
                     text = text.Substring(0, text.Length - 2);
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 return text;
             }
+#pragma warning disable CS8603 // Possible null reference return.
             return obj.ToString();
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public object VisitGroupingExpr(Expr.Grouping expr){
@@ -124,15 +140,28 @@ namespace LoxApp
 
         public object VisitBlockStmt(Stmt.Block stmt){
             executeBlock(stmt.statements, new Environment(environment));
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public object VisitExpressionStmt(Stmt.Expression stmt){
             evaluate(stmt.expression);
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
-        public void VisitIfStmt(Stmt.If stmt){
+        public object VisitFunctionStmt(Stmt.Function stmt){
+            LoxFunction function = new LoxFunction(stmt);
+            environment.define(stmt.name.lexeme, function);
+#pragma warning disable CS8603 // Possible null reference return.
+            return null;
+#pragma warning restore CS8603 // Possible null reference return.
+        }
+
+
+        public object VisitIfStmt(Stmt.If stmt){
             if (isTruthy(evaluate(stmt.condition)))
             {
                 execute(stmt.thenBranch);
@@ -141,22 +170,31 @@ namespace LoxApp
             {
                 execute(stmt.elseBranch);
             }
+#pragma warning disable CS8603 // Possible null reference return.
+            return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public object VisitPrintStmt(Stmt.Print stmt){
             object value = evaluate(stmt.expression);
             Console.WriteLine(Stringify(value));
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public object VisitVarStmt(Stmt.Var stmt){
-            object value = null;
+            object? value = null;
             if (stmt.initializer != null)
             {
                 value = evaluate(stmt.initializer);
             }
+#pragma warning disable CS8604 // Possible null reference argument.
             environment.define(stmt.name.lexeme, value);
+#pragma warning restore CS8604 // Possible null reference argument.
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         public object VisitWhileStmt(Stmt.While stmt){ //void
@@ -164,7 +202,9 @@ namespace LoxApp
             {
                 execute(stmt.body);
             }
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
 
@@ -219,19 +259,42 @@ namespace LoxApp
                     return (double)left * (double)right;
             }
 
+#pragma warning disable CS8603 // Possible null reference return.
             return null;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
-        private void checkNumberOperands(Token @operator, object left, object right)
-        {
+
+        public object VisitCallExpr(Expr.Call expr){
+            object callee = evaluate(expr.callee);
+
+            List<object> arguments = new List<object>();
+
+            foreach (Expr argument in expr.arguments){
+                arguments.Add(evaluate(argument));
+            }
+
+            if (!(callee is ILoxCallable)){
+                throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+            }
+
+            ILoxCallable function = (ILoxCallable)callee;//issuehere
+            
+            if (arguments.Count != function.arity()){ //as expected..
+                throw new RuntimeError(expr.paren, "Expected " +
+                    function.arity() + " arguments but got " +
+                    arguments.Count + ".");
+            }
+#pragma warning disable CS8603 // Possible null reference return.
+            return function.call(this, arguments);
+#pragma warning restore CS8603 // Possible null reference return.
+        }
+
+        private void checkNumberOperands(Token @operator, object left, object right){
             if (left is double && right is double) return;
             throw new RuntimeError(@operator, "Operands must be numbers.");
         }
 
-        object Stmt.Visitor<object>.VisitIfStmt(Stmt.If stmt)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

@@ -7,6 +7,7 @@ namespace LoxApp
   public interface Visitor<R> {
     public R VisitBlockStmt(Block stmt);
     public R VisitExpressionStmt(Expression stmt);
+    public R VisitFunctionStmt(Function stmt);
     public R VisitIfStmt(If stmt);
     public R VisitPrintStmt(Print stmt);
     public R VisitVarStmt(Var stmt);
@@ -33,6 +34,21 @@ namespace LoxApp
     }
 
     public readonly Expr expression;
+  }
+  public class Function : Stmt {
+    public Function(Token @name, List<Token> @params, List<Stmt> body) {
+      this.@name = @name;
+      this.@params = @params;
+      this.body = body;
+    }
+
+    public override R Accept<R>(Visitor<R> visitor) {
+        return visitor.VisitFunctionStmt(this);
+    }
+
+    public readonly Token @name;
+    public readonly List<Token> @params;
+    public readonly List<Stmt> body;
   }
   public class If : Stmt {
     public If(Expr condition, Stmt thenBranch, Stmt elseBranch) {

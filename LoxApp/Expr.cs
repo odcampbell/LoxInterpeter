@@ -7,6 +7,7 @@ namespace LoxApp
   public interface Visitor<R> {
     public R VisitAssignExpr(Assign expr);
     public R VisitBinaryExpr(Binary expr);
+    public R VisitCallExpr(Call expr);
     public R VisitGroupingExpr(Grouping expr);
     public R VisitLiteralExpr(Literal expr);
     public R VisitLogicalExpr(Logical expr);
@@ -40,6 +41,21 @@ namespace LoxApp
     public readonly Expr left;
     public readonly Token @operator;
     public readonly Expr right;
+  }
+  public class Call : Expr {
+    public Call(Expr callee, Token @paren, List<Expr> arguments) {
+      this.callee = callee;
+      this.@paren = @paren;
+      this.arguments = arguments;
+    }
+
+    public override R Accept<R>(Visitor<R> visitor) {
+        return visitor.VisitCallExpr(this);
+    }
+
+    public readonly Expr callee;
+    public readonly Token @paren;
+    public readonly List<Expr> arguments;
   }
   public class Grouping : Expr {
     public Grouping(Expr expression) {

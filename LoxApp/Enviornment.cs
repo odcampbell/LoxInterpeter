@@ -5,11 +5,13 @@ namespace LoxApp
     public class Environment
     {
         private readonly Dictionary<string, object> values = new Dictionary<string, object>();
-        public Environment enclosing;
+        public Environment? enclosing;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Environment(){
             enclosing = null;
         }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public Environment(Environment enclosing){
             this.enclosing = enclosing;

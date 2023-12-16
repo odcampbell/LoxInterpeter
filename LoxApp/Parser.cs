@@ -19,7 +19,9 @@ namespace LoxApp
             List<Stmt> statements = new List<Stmt>();
             while (!isAtEnd())
             {
+#pragma warning disable CS8604 // Possible null reference argument.
                 statements.Add(declaration());
+#pragma warning restore CS8604 // Possible null reference argument.
             }
             return statements;
         }
@@ -28,14 +30,13 @@ namespace LoxApp
             return assignment();
         }
 
-        private Stmt declaration(){
-            try
-            {
+        private Stmt? declaration(){
+            try{
+                if (match(FUN)) return function("function");
                 if (match(VAR)) return varDeclaration();
                 return statement();
             }
-            catch (ParseError error)
-            {
+            catch (ParseError){
                 Synchronize();
                 return null;
             }
@@ -53,7 +54,7 @@ namespace LoxApp
 
         private Stmt forStatement(){
             consume(LEFT_PAREN, "Expect '(' after 'for'.");
-            Stmt initializer;
+            Stmt? initializer;
             if (match(SEMICOLON)){
                 initializer = null;
             }
@@ -64,13 +65,13 @@ namespace LoxApp
                 initializer = expressionStatement();
             }
 
-            Expr condition = null;
+            Expr? condition = null;
             if (!check(SEMICOLON)) {
                 condition = expression();
             }
             consume(SEMICOLON, "Expect ';' after loop condition.");
 
-               Expr increment = null;
+               Expr? increment = null;
                 if (!check(RIGHT_PAREN)) {
                     increment = expression();
                 }
@@ -101,12 +102,13 @@ namespace LoxApp
             Expr condition = expression();
             consume(RIGHT_PAREN, "Expect ')' after if condition.");
             Stmt thenBranch = statement();
-            Stmt elseBranch = null;
-            if (match(ELSE))
-            {
+            Stmt? elseBranch = null;
+            if (match(ELSE)){
                 elseBranch = statement();
             }
+#pragma warning disable CS8604 // Possible null reference argument.
             return new Stmt.If(condition, thenBranch, elseBranch);
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         private Stmt printStatement(){
@@ -118,13 +120,14 @@ namespace LoxApp
 
         private Stmt varDeclaration(){
             Token name = consume(IDENTIFIER, "Expect variable name.");
-            Expr initializer = null;
-            if (match(EQUAL))
-            {
+            Expr? initializer = null;
+            if (match(EQUAL)){
                 initializer = expression();
             }
             consume(SEMICOLON, "Expect ';' after variable declaration.");
+#pragma warning disable CS8604 // Possible null reference argument.
             return new Stmt.Var(name, initializer);
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
         private Stmt whileStatement(){
@@ -142,11 +145,36 @@ namespace LoxApp
             return new Stmt.Expression(expr);
         }
 
+        private Stmt.Function function(string kind){
+            Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+            consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
+
+            List<Token> parameters = new List<Token>();
+
+            if (!check(RIGHT_PAREN)) {
+                do {
+                    if (parameters.Count >= 255) {
+                        error(peek(), "Can't have more than 255 parameters.");
+                    }
+                    parameters.Add(
+                        consume(IDENTIFIER, "Expect parameter name."));
+                } while (match(COMMA));
+            }
+            
+            consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+            consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+            List<Stmt> body = block();
+            return new Stmt.Function(name, parameters, body);
+        }
+
+
         private List<Stmt> block(){
             List<Stmt> statements = new List<Stmt>();
-            while (!check(RIGHT_BRACE) && !isAtEnd())
-            {
+            while (!check(RIGHT_BRACE) && !isAtEnd()){
+#pragma warning disable CS8604 // Possible null reference argument.
                 statements.Add(declaration());
+#pragma warning restore CS8604 // Possible null reference argument.
             }
             consume(RIGHT_BRACE, "Expect '}' after block.");
             return statements;
@@ -155,38 +183,41 @@ namespace LoxApp
 
         private Expr assignment(){
             Expr expr = or();
-            if (match(EQUAL))
-            {
-                Token equals = previous();
+            if (match(EQUAL)){
+                Token? equals = previous();
                 Expr value = assignment();
                 if (expr is Expr.Variable variable)
                 {
                     Token name = variable.name;
                     return new Expr.Assign(name, value);
                 }
+#pragma warning disable CS8604 // Possible null reference argument.
                 error(equals, "Invalid assignment target.");
+#pragma warning restore CS8604 // Possible null reference argument.
             }
             return expr;
         }
 
         private Expr or(){
             Expr expr = and();
-            while (match(OR))
-            {
-                Token @operator = previous();
+            while (match(OR)){
+                Token? @operator = previous();
                 Expr right = and();
+#pragma warning disable CS8604 // Possible null reference argument.
                 expr = new Expr.Logical(expr, @operator, right);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
             return expr;
         }
 
         private Expr and(){
             Expr expr = equality();
-            while (match(AND))
-            {
-                Token @operator = previous();
+            while (match(AND)){
+                Token? @operator = previous();
                 Expr right = equality();
+#pragma warning disable CS8604 // Possible null reference argument.
                 expr = new Expr.Logical(expr, @operator, right);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
             return expr;
         }
@@ -194,8 +225,7 @@ namespace LoxApp
 
         private Expr equality(){
             Expr expr = comparison();
-            while (match(BANG_EQUAL, EQUAL_EQUAL))
-            {
+            while (match(BANG_EQUAL, EQUAL_EQUAL)){
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 Token operatorToken = previous();
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -209,8 +239,7 @@ namespace LoxApp
 
         private Expr comparison(){
             Expr expr = term();
-            while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL))
-            {
+            while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)){
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 Token @operator = previous();
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -224,8 +253,7 @@ namespace LoxApp
 
         private Expr term(){
             Expr expr = factor();
-            while (match(MINUS) || match(PLUS))
-            {
+            while (match(MINUS) || match(PLUS)){
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 Token @operator = previous();
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -240,8 +268,7 @@ namespace LoxApp
 
         private Expr factor(){
             Expr expr = unary();
-            while (match(SLASH, STAR))
-            {
+            while (match(SLASH, STAR)){
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 Token @operator = previous();
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -254,26 +281,62 @@ namespace LoxApp
         }
 
         private Expr unary(){
-            if (match(BANG, MINUS))
-            {
-                Token @operator = previous();
+            if (match(BANG, MINUS)){
+                Token? @operator = previous();
                 Expr right = unary();
+#pragma warning disable CS8604 // Possible null reference argument.
                     return new Expr.Unary(@operator, right);
+#pragma warning restore CS8604 // Possible null reference argument.
                 }
-            return Primary();
+            return call();
         }
 
-        private Expr Primary()
-        {
+        private Expr finishCall(Expr callee){
+            List<Expr> arguments = new List<Expr>();
+            if (!check(RIGHT_PAREN)){
+                do
+                {
+                     if (arguments.Count() >= 255) {
+                        error(peek(), "Can't have more than 255 arguments.");
+                    }
+                    arguments.Add(expression());
+                } while (match(COMMA));
+            }
+            Token paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
+            return new Expr.Call(callee, paren, arguments);
+        }
+
+        private Expr call(){
+            Expr expr = Primary();
+            while (true){
+                if (match(LEFT_PAREN)){
+                    expr = finishCall(expr);
+                }
+                else{
+                    break;
+                }
+            }
+            return expr;
+        }
+
+        private Expr Primary(){
             if (match(FALSE)) return new Expr.Literal(false);
             if (match(TRUE)) return new Expr.Literal(true);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             if (match(NIL)) return new Expr.Literal(null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             if (match(NUMBER, STRING)){
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     return new Expr.Literal(previous().literal);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+#pragma warning restore CS8604 // Possible null reference argument.
             }
 
             if (match(IDENTIFIER)){
+#pragma warning disable CS8604 // Possible null reference argument.
                 return new Expr.Variable(previous());
+#pragma warning restore CS8604 // Possible null reference argument.
             }
 
             if (match(LEFT_PAREN))
@@ -324,37 +387,29 @@ namespace LoxApp
         }
 
         private Token consume(TokenType type, string message){
+#pragma warning disable CS8603 // Possible null reference return.
             if (check(type)) return advance();
+#pragma warning restore CS8603 // Possible null reference return.
             throw error(peek(), message);
         }
 
 
         private ParseError error(Token token, string message) //reprot?
         {
-            report(token, message);
+            Lox.error(token, message);
             return new ParseError();
         }
 
-        static void report(Token token, string message){
-            if (token.type == EOF)
-            {
-                Lox.report(token.line, " at end", message);
-            }
-            else
-            {
-                Lox.report(token.line, " at '" + token.lexeme + "'", message);
-            }
-        }
-
-        private void Synchronize()
-        {
+        private void Synchronize(){
             advance();
             while (!isAtEnd())
             {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (previous().type == SEMICOLON)
                 {
                     return;
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                 switch (peek().type)
                 {
                     case CLASS:

@@ -46,17 +46,26 @@ namespace LoxApp
         public string VisitAssignExpr(Expr.Assign expr) 
         {
             return Parenthesize(expr.@name.lexeme, expr.value);
+            // throw new NotImplementedException();
+
         }
 
         public string VisitVariableExpr(Expr.Variable expr)
         {
             return Parenthesize(expr.@name.lexeme, expr);
+            // throw new NotImplementedException();
 
         }
 
         public string VisitLogicalExpr(Expr.Logical expr)
         {
             return Parenthesize(expr.@operator.lexeme, expr.right);
+        }
+
+        public string VisitCallExpr(Expr.Call expr)
+        {
+            return Parenthesize("fn2k",expr.callee);
+            // throw new NotImplementedException();
         }
 
         //    public static void Main(string[] args)
