@@ -183,6 +183,13 @@ namespace LoxApp
 #pragma warning restore CS8603 // Possible null reference return.
         }
 
+        public object VisitReturnStmt(Stmt.Return stmt){
+            object value = null;
+            if (stmt.value != null) value = evaluate(stmt.value);
+            throw new Return(value);
+        }
+
+
         public object VisitVarStmt(Stmt.Var stmt){
             object? value = null;
             if (stmt.initializer != null)

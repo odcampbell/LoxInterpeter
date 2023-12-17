@@ -18,14 +18,18 @@ namespace LoxApp
             return declaration.@params.Count;
         }
 
-        public object? call(Interpreter interpreter, List<object> arguments)
-        {
+        public object? call(Interpreter interpreter, List<object> arguments){
             Environment environment = new Environment(interpreter.globals);
-            for (int i = 0; i < declaration.@params.Count; i++)
-            {
+
+            for (int i = 0; i < declaration.@params.Count; i++){
                 environment.define(declaration.@params[i].lexeme, arguments[i]);
             }
+            try {
             interpreter.executeBlock(declaration.body, environment);
+            } 
+            catch (Return returnValue) {
+                return returnValue.value;
+            }
             return null;
         }
 

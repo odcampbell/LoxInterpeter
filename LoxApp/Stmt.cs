@@ -10,6 +10,7 @@ namespace LoxApp
     public R VisitFunctionStmt(Function stmt);
     public R VisitIfStmt(If stmt);
     public R VisitPrintStmt(Print stmt);
+    public R VisitReturnStmt(Return stmt);
     public R VisitVarStmt(Var stmt);
     public R VisitWhileStmt(While stmt);
   }
@@ -76,9 +77,22 @@ namespace LoxApp
 
     public readonly Expr expression;
   }
+  public class Return : Stmt {
+    public Return(Token @keyword, Expr value) {
+      this.@keyword = @keyword;
+      this.value = value;
+    }
+
+    public override R Accept<R>(Visitor<R> visitor) {
+        return visitor.VisitReturnStmt(this);
+    }
+
+    public readonly Token @keyword;
+    public readonly Expr value;
+  }
   public class Var : Stmt {
-    public Var(Token name, Expr initializer) {
-      this.name = name;
+    public Var(Token @name, Expr initializer) {
+      this.@name = @name;
       this.initializer = initializer;
     }
 
@@ -86,7 +100,7 @@ namespace LoxApp
         return visitor.VisitVarStmt(this);
     }
 
-    public readonly Token name;
+    public readonly Token @name;
     public readonly Expr initializer;
   }
   public class While : Stmt {

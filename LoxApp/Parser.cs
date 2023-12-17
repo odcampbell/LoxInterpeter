@@ -47,6 +47,7 @@ namespace LoxApp
             if (match(FOR)) return forStatement();
             if (match(IF)) return ifStatement();
             if (match(PRINT)) return printStatement();
+            if (match(RETURN)) return returnStatement();
             if (match(WHILE)) return whileStatement();
             if (match(LEFT_BRACE)) return new Stmt.Block(block());
             return expressionStatement();
@@ -117,6 +118,17 @@ namespace LoxApp
             return new Stmt.Print(value);
         }
 
+        private Stmt returnStatement(){
+            Token? keyword = previous();
+            Expr? value = null;
+            if (!check(SEMICOLON)){
+                value = expression();
+            }
+            consume(SEMICOLON, "Expect ';' after return value.");
+#pragma warning disable CS8604 // Possible null reference argument.
+            return new Stmt.Return(keyword, value);
+#pragma warning restore CS8604 // Possible null reference argument.
+        }
 
         private Stmt varDeclaration(){
             Token name = consume(IDENTIFIER, "Expect variable name.");
