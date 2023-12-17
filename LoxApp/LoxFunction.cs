@@ -5,8 +5,10 @@ namespace LoxApp
     class LoxFunction : ILoxCallable
     {
         private readonly Stmt.Function declaration;
+        private readonly Environment myClosure;
 
-        public LoxFunction(Stmt.Function declaration){
+        public  LoxFunction(Stmt.Function declaration, Environment myClosure) {
+            this.myClosure = myClosure;
             this.declaration = declaration;
         }
 
@@ -19,7 +21,8 @@ namespace LoxApp
         }
 
         public object? call(Interpreter interpreter, List<object> arguments){
-            Environment environment = new Environment(interpreter.globals);
+            Environment environment = new Environment(myClosure);
+            // Environment environment = new Environment(interpreter.globals);
 
             for (int i = 0; i < declaration.@params.Count; i++){
                 environment.define(declaration.@params[i].lexeme, arguments[i]);

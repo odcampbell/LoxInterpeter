@@ -8,7 +8,6 @@ namespace LoxApp
         private readonly string source;
         private readonly List<Token> tokens = new List<Token>();
         private static readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>();
-
         private int start = 0;
         private int current = 0;
         private int line = 1;

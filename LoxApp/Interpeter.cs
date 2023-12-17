@@ -153,7 +153,7 @@ namespace LoxApp
         }
 
         public object VisitFunctionStmt(Stmt.Function stmt){
-            LoxFunction function = new LoxFunction(stmt);
+            LoxFunction function = new LoxFunction(stmt, environment);
             environment.define(stmt.name.lexeme, function);
 #pragma warning disable CS8603 // Possible null reference return.
             return null;
