@@ -29,20 +29,20 @@ https://craftinginterpreters.com/scanning.html
 3. ### RUN: (For Syntax and Stuff see Step 5)
     1. **To terminal:**
         1. **From File**
-            - run cmd **dotnet run** fileName.txt
-            - this will run the cmds in the file and exit when done
+            - run cmd **dotnet run fileName.txt**
+            - this will run the cmds in the file, output to screen/terminal and exit when done
             - fileName.txt is just a placeholder for whatever file is holding your code
             - **Try** with this cmd: **dotnet run arg1.txt** to use my demo file
             - Answers are located in **"answerKey.txt"**
 
         2. **Interactive:**
             - run cmd **dotnet run** in your terminal or open **Lox.cs** and press the play/run button in your IDE
-            - you can type cmds in one line continously e.g. print 2+2; to output 4
+            - you can type cmds in one line continuously e.g. print 2+2; to output 4
             - use cmd ctrl + c to exit the interactive terminal
 
     2. **To File:** 
-        - Depending on your terminal e.g., widnows terminal or powershell the results may be encoded in the output file
-        - For powershell use the dotnet cmd, for terminal, you may have to write a few lines in Lox.cs main runFile to send data to a file
+        - Depending on your terminal e.g., windows terminal or PowerShell the results may be encoded in the output file
+        - For Powershell use the dotnet cmd below, for terminal, you may have to write a few lines in Lox.cs main runFile to send data to a file
         - To send results to a file, just add the extraction operator **">>"** and a file name for your output
         - e.g., run cmd **dotnet run fileName.txt >> output.txt**
 
