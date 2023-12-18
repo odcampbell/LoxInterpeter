@@ -1,0 +1,15 @@
+PASS  =   RECURSION_TEST
+PASS  =   1
+PASS  =   13
+PASS  =   55
+PASS  =   233
+PASS  =   CLOSURE_TESTS
+PASS  =   global
+PASS  =   global
+PASS  =   CLASS_TESTS
+PASS  =   Bagel
+PASS  =   instance
+PASS  =   DevonshireCream
+PASS  =   Crunch_crunch_crunch!
+PASS  =   Foo
+ALL TESTS PASSED

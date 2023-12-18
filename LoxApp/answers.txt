@@ -1,0 +1,14 @@
+TESTING
+RECURSION_TEST
+1
+13
+55
+233
+CLOSURE_TESTS
+global
+global
+CLASS_TESTS
+Bagel instance
+DevonshireCream
+Crunch_crunch_crunch!
+Foo
