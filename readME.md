@@ -59,6 +59,7 @@ https://craftinginterpreters.com/scanning.html
         - Class inheritence, didn't finish chapter 13
         - Some closure code works and some doesn't but this would take too long to track down now
         - Also, my lox has some scoping issues that I haven't been able to resolve so some code doesn't work as it should
+        - e.g., ProblemExamples.txt that return nil or are an exception
     2. Otherwise, my syntax follows that of Crafting Interpreters exactly, with the only difference being some bugs here or there
 
 6. ### TEST RESULTS:
