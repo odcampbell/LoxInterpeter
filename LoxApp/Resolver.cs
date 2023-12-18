@@ -74,6 +74,13 @@ namespace LoxApp
             endScope();
             return null;
         }
+
+        public object? VisitClassStmt(Stmt.Class stmt){
+            declare(stmt.name);
+            define(stmt.name);
+            return null;
+        }
+
 #pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
         
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).

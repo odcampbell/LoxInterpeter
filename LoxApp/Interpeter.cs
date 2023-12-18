@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace LoxApp
 {
     public class GlobalsLite : Environment {
-        public override string ToString() { return "<native fn>";}
+        public new string ToString() { return "<native fn>";}
     }
 
     public class Interpreter : Expr.Visitor<object>, Stmt.Visitor<object>
@@ -170,6 +170,17 @@ namespace LoxApp
             return null;
 #pragma warning restore CS8603 // Possible null reference return.
         }
+
+#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
+        public object? VisitClassStmt(Stmt.Class stmt){
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+            environment.define(stmt.name.lexeme, null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+            LoxClass klass = new LoxClass(stmt.name.lexeme);
+            environment.assign(stmt.name, klass);
+            return null;
+        }
+#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
         public object VisitExpressionStmt(Stmt.Expression stmt){
             evaluate(stmt.expression);

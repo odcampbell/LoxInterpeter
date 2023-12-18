@@ -6,6 +6,7 @@ namespace LoxApp
     {
   public interface Visitor<R> {
     public R VisitBlockStmt(Block stmt);
+    public R VisitClassStmt(Class stmt);
     public R VisitExpressionStmt(Expression stmt);
     public R VisitFunctionStmt(Function stmt);
     public R VisitIfStmt(If stmt);
@@ -25,6 +26,19 @@ namespace LoxApp
 
     public readonly List<Stmt> statements;
   }
+  public class Class : Stmt {
+    public Class(Token @name, List<Stmt.Function> methods) {
+      this.@name = @name;
+      this.methods = methods;
+    }
+
+    public override R Accept<R>(Visitor<R> visitor) {
+        return visitor.VisitClassStmt(this);
+    }
+
+    public readonly Token @name;
+    public readonly List<Stmt.Function> methods;
+  }
   public class Expression : Stmt {
     public Expression(Expr expression) {
       this.expression = expression;
@@ -36,7 +50,6 @@ namespace LoxApp
 
     public readonly Expr expression;
   }
-  //Expr.Visitor<Void>.VisitAssignExpr(Expr.Assign)
   public class Function : Stmt {
     public Function(Token @name, List<Token> @params, List<Stmt> body) {
       this.@name = @name;

@@ -7,7 +7,7 @@ namespace LoxApp
         public int arity();
         public object? call(Interpreter interpreter, List<object> arguments);
 
-        public string toString();
+        public string ToString();
 
     }
 
@@ -19,7 +19,7 @@ namespace LoxApp
             return (double)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000.0;
         }
 
-        public string toString(){
+        public new string ToString(){
             return "<native fn>";
         }
 
