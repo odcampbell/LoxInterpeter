@@ -68,6 +68,24 @@ namespace LoxApp
             // throw new NotImplementedException();
         }
 
+        public string VisitGetExpr(Expr.Get expr)
+        {
+            return Parenthesize(expr.@name.lexeme, expr);
+
+        }
+
+        public string VisitSetExpr(Expr.Set expr)
+        {
+            return Parenthesize(expr.@name.lexeme, expr);
+
+        }
+
+        public string VisitThisExpr(Expr.This expr)
+        {
+            return Parenthesize(expr.keyword.lexeme, expr);
+
+        }
+
         //    public static void Main(string[] args)
         //     {
         //         Expr expression = new Expr.Binary(

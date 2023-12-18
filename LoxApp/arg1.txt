@@ -1,3 +1,20 @@
+print "TESTING";
+
+print "RECURSION_TEST";
+
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+
+print fib(1);
+print fib(7);
+print fib(10);
+print fib(13);
+
+
+print "CLOSURE_TESTS";
+
 var a = "global";
 {
   fun showA() {
@@ -8,6 +25,10 @@ var a = "global";
   var a = "block";
   showA();
 }
+//prints global 2x
+
+
+print "CLASS_TESTS";
 
 class Bagel {}
 var bagel = Bagel();
@@ -20,3 +41,19 @@ class DevonshireCream {
 }
 
 print DevonshireCream; // Prints "DevonshireCream".
+
+class Bacon {
+  eat() {
+    print "Crunch_crunch_crunch!";
+  }
+}
+
+Bacon().eat(); // Prints "Crunch crunch crunch!".
+
+class Foo {
+  returnSelf() {
+    return Foo;
+  }
+}
+
+print Foo().returnSelf(); // expect: Foo

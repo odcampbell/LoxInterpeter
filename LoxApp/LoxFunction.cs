@@ -2,14 +2,25 @@ using System.Collections.Generic;
 
 namespace LoxApp
 {
-    class LoxFunction : ILoxCallable
+    public class LoxFunction : ILoxCallable
     {
         private readonly Stmt.Function declaration;
         private readonly Environment myClosure;
+        
 
-        public  LoxFunction(Stmt.Function declaration, Environment myClosure) {
+        private readonly bool isInitializer;
+
+        public LoxFunction(Stmt.Function declaration, Environment myClosure, bool isInitializer) {
+            this.isInitializer = isInitializer;
             this.myClosure = myClosure;
             this.declaration = declaration;
+        }
+
+        public LoxFunction bind(LoxInstance instance) {
+            Environment environment = new Environment(myClosure);
+            environment.define("this", instance);
+            return new LoxFunction(declaration, environment,
+                           isInitializer);
         }
 
         public new string ToString(){
@@ -31,8 +42,10 @@ namespace LoxApp
             interpreter.executeBlock(declaration.body, environment);
             } 
             catch (Return returnValue) {
+                if (isInitializer) return myClosure.getAt(0, "this");
                 return returnValue.value;
             }
+            if (isInitializer) return myClosure.getAt(0, "this");
             return null;
         }
 

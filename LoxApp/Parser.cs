@@ -214,6 +214,11 @@ namespace LoxApp
                     Token name = variable.name;
                     return new Expr.Assign(name, value);
                 }
+                else if (expr is Expr.Get){
+                    Expr.Get get = (Expr.Get)expr;
+                    return new Expr.Set(get.objt, get.name, value);
+                }
+
 #pragma warning disable CS8604 // Possible null reference argument.
                 error(equals, "Invalid assignment target.");
 #pragma warning restore CS8604 // Possible null reference argument.
@@ -333,7 +338,12 @@ namespace LoxApp
             Expr expr = Primary();
             while (true){
                 if (match(LEFT_PAREN)){
+                    // Console.WriteLine("EXPR IS"+expr);
                     expr = finishCall(expr);
+                }
+                else if (match(DOT)){
+                    Token name = consume(IDENTIFIER, "Expect property name after '.'.");
+                    expr = new Expr.Get(expr, name);
                 }
                 else{
                     break;
@@ -356,6 +366,9 @@ namespace LoxApp
 #pragma warning restore CS8604 // Possible null reference argument.
             }
 
+#pragma warning disable CS8604 // Possible null reference argument.
+            if (match(THIS)) return new Expr.This(previous());
+#pragma warning restore CS8604 // Possible null reference argument.
             if (match(IDENTIFIER)){
 #pragma warning disable CS8604 // Possible null reference argument.
                 return new Expr.Variable(previous());

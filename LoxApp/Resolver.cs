@@ -14,8 +14,17 @@ namespace LoxApp
 
         private enum FunctionType {
             NONE,
+            INITIALIZER,
+            METHOD,
             FUNCTION
         }
+
+        private enum ClassType {
+            NONE,
+            CLASS
+        }
+
+        private ClassType currentClass = ClassType.NONE;
 
         public void resolve(List<Stmt> statements){ //1
 
@@ -76,8 +85,23 @@ namespace LoxApp
         }
 
         public object? VisitClassStmt(Stmt.Class stmt){
+            ClassType enclosingClass = currentClass;
+            currentClass = ClassType.CLASS;
             declare(stmt.name);
             define(stmt.name);
+
+             beginScope();
+            scopes.Peek().Add("this", true);
+
+            foreach (Stmt.Function method in stmt.methods){
+                FunctionType declaration = FunctionType.METHOD;
+                 if (method.name.lexeme.Equals("init")) {
+                    declaration = FunctionType.INITIALIZER;
+                }
+                resolveFunction(method, declaration);
+            }
+            endScope();
+            currentClass = enclosingClass;
             return null;
         }
 
@@ -123,6 +147,10 @@ namespace LoxApp
             }
 
             if (stmt.value != null) {
+                if (currentFunction == FunctionType.INITIALIZER) {
+                    Lox.error(stmt.keyword,
+                        "Can't return a value from an initializer.");
+                }
                 resolve(stmt.value);
             }
 
@@ -186,6 +214,12 @@ namespace LoxApp
             }
             return null;
         }
+
+        public object? VisitGetExpr(Expr.Get expr){
+            resolve(expr.objt);
+            return null;
+        }
+
 #pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
@@ -207,6 +241,24 @@ namespace LoxApp
             resolve(expr.right);
             return null;
         }
+
+
+        public object? VisitSetExpr(Expr.Set expr){
+            resolve(expr.value);
+            resolve(expr.objt);//@
+            return null;
+        }
+
+        public object? VisitThisExpr(Expr.This expr){
+            if (currentClass == ClassType.NONE) {
+                Lox.error(expr.keyword,
+                "Can't use 'this' outside of a class.");
+                return null;
+            }
+            resolveLocal(expr, expr.keyword);
+            return null;
+        }
+
 #pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
 
 #pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).

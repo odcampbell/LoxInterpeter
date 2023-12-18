@@ -8,9 +8,12 @@ namespace LoxApp
     public R VisitAssignExpr(Assign expr);
     public R VisitBinaryExpr(Binary expr);
     public R VisitCallExpr(Call expr);
+    public R VisitGetExpr(Get expr);
     public R VisitGroupingExpr(Grouping expr);
     public R VisitLiteralExpr(Literal expr);
     public R VisitLogicalExpr(Logical expr);
+    public R VisitSetExpr(Set expr);
+    public R VisitThisExpr(This expr);
     public R VisitUnaryExpr(Unary expr);
     public R VisitVariableExpr(Variable expr);
   }
@@ -57,6 +60,19 @@ namespace LoxApp
     public readonly Token @paren;
     public readonly List<Expr> arguments;
   }
+  public class Get : Expr {
+    public Get(Expr objt, Token @name) {
+      this.objt = objt;
+      this.@name = @name;
+    }
+
+    public override R Accept<R>(Visitor<R> visitor) {
+        return visitor.VisitGetExpr(this);
+    }
+
+    public readonly Expr objt;
+    public readonly Token @name;
+  }
   public class Grouping : Expr {
     public Grouping(Expr expression) {
       this.expression = expression;
@@ -93,6 +109,32 @@ namespace LoxApp
     public readonly Expr left;
     public readonly Token @operator;
     public readonly Expr right;
+  }
+  public class Set : Expr {
+    public Set(Expr objt, Token @name, Expr value) {
+      this.objt = objt;
+      this.@name = @name;
+      this.value = value;
+    }
+
+    public override R Accept<R>(Visitor<R> visitor) {
+        return visitor.VisitSetExpr(this);
+    }
+
+    public readonly Expr objt;
+    public readonly Token @name;
+    public readonly Expr value;
+  }
+  public class This : Expr {
+    public This(Token @keyword) {
+      this.@keyword = @keyword;
+    }
+
+    public override R Accept<R>(Visitor<R> visitor) {
+        return visitor.VisitThisExpr(this);
+    }
+
+    public readonly Token @keyword;
   }
   public class Unary : Expr {
     public Unary(Token @operator, Expr right) {

@@ -38,10 +38,10 @@ namespace LoxApp
         }
 
         public object? getAt(int distance, string name){
-            // if(ancestor(distance).values.ContainsKey(name)){
+            if(ancestor(distance).values.ContainsKey(name)){
                 return ancestor(distance).values[name];
-            // }
-            // return null; //not too happy about this one but what can ya do
+            }
+            return null; //not too happy about this one but what can ya do
         }
         
         public void assignAt(int distance, Token name, object value){
