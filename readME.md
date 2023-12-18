@@ -57,10 +57,9 @@ https://craftinginterpreters.com/scanning.html
 5. ### Syntax and Stuff
     1. **Not Implemented: (Things you can't do/use in my lox)**
         - Class inheritence, didn't finish chapter 13
-        - Some closure code works and some doesn't but this would take too long to track down now
-        - Also, my lox has some scoping issues that I haven't been able to resolve so some code doesn't work as it should
+        - Also, my lox has some scoping/closure issues that I haven't been able to resolve so some code doesn't work as it should
     2. Otherwise, my syntax follows that of Crafting Interpreters exactly, with the only difference being some bugs here or there
 
 6. ### TEST RESULTS:
     1. I've included the expected test results in **testResults.txt**
-    2. When you run the test mention in step 4, this output is what should be displayed to the screen/terminal
+    2. When you run the test outlined in step 4, this output is what should be displayed to the screen/terminal
