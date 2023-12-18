@@ -56,7 +56,11 @@ namespace LoxApp
 			Parser parser = new Parser(tokens);
 			List<Stmt> statements = parser.parse();
 
-			// if (hadError) return;
+			if (hadError) return;
+			Resolver resolver = new(interpreter);
+    		resolver.resolve(statements);
+			if (hadError) return;
+
 			interpreter.interpret(statements);
 			// Console.WriteLine(new AstPrinter().Print(expression));
 

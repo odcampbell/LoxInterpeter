@@ -53,7 +53,7 @@ namespace LoxApp
             return expressionStatement();
         }
 
-        private Stmt forStatement(){
+        private Stmt forStatement(){//FIXME
             consume(LEFT_PAREN, "Expect '(' after 'for'.");
             Stmt? initializer;
             if (match(SEMICOLON)){

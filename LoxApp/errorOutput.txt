@@ -1,0 +1,49 @@
+nhandled exception. System.Collections.Generic.KeyNotFoundException: The given key 'i' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at LoxApp.Environment.getAt(Int32 distance, String name) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Enviornment.cs:line 39
+   at LoxApp.Interpreter.lookUpVariable(Token name, Expr expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 80
+   at LoxApp.Interpreter.VisitVariableExpr(Variable expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 72
+
+   at LoxApp.Expr.Variable.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Expr.cs:line 116
+   at LoxApp.Interpreter.evaluate(Expr expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 131
+   at LoxApp.Interpreter.VisitBinaryExpr(Binary expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 255
+   at LoxApp.Expr.Binary.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Expr.cs:line 38
+   at LoxApp.Interpreter.evaluate(Expr expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 131
+   at LoxApp.Interpreter.VisitPrintStmt(Print stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 198
+   at LoxApp.Stmt.Print.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Stmt.cs:line 76
+   at LoxApp.Interpreter.execute(Stmt stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 135
+   at LoxApp.Interpreter.executeBlock(List`1 statements, Environment environment) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 150
+   at LoxApp.Interpreter.VisitBlockStmt(Block stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 161
+   at LoxApp.Stmt.Block.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Stmt.cs:line 23
+   at LoxApp.Interpreter.execute(Stmt stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 135
+   at LoxApp.Interpreter.executeBlock(List`1 statements, Environment environment) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 150
+   at LoxApp.Interpreter.VisitBlockStmt(Block stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 161
+   at LoxApp.Stmt.Block.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Stmt.cs:line 23
+   at LoxApp.Interpreter.execute(Stmt stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 135
+   at LoxApp.Interpreter.VisitWhileStmt(While stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 231
+   at LoxApp.Stmt.While.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Stmt.cs:line 114
+   at LoxApp.Interpreter.execute(Stmt stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 135
+   at LoxApp.Interpreter.executeBlock(List`1 statements, Environment environment) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 150
+   at LoxApp.Interpreter.VisitBlockStmt(Block stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 161
+   at LoxApp.Stmt.Block.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Stmt.cs:line 23
+   at LoxApp.Interpreter.execute(Stmt stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 135
+   at LoxApp.Interpreter.interpret(List`1 statements) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 46
+   at LoxApp.Lox.run(String source) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Lox.cs:line 66
+   at LoxApp.Lox.runFile(String path) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Lox.cs:line 32
+   at LoxApp.Lox.Program.Main(String[] args) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Lox.cs:line 22
+
+
+   PS C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp> dotnet run arg1.txt >> output.txt
+Unhandled exception. System.Collections.Generic.KeyNotFoundException: The given key 'LoxApp.Expr+Variable' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at LoxApp.Interpreter.lookUpVariable(Token name, Expr expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 76
+   at LoxApp.Interpreter.VisitVariableExpr(Variable expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 72
+   at LoxApp.Expr.Variable.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Expr.cs:line 116
+   at LoxApp.Interpreter.evaluate(Expr expr) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 131
+   at LoxApp.Interpreter.VisitPrintStmt(Print stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 202
+   at LoxApp.Stmt.Print.Accept[R](Visitor`1 visitor) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Stmt.cs:line 76
+   at LoxApp.Interpreter.execute(Stmt stmt) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 135
+   at LoxApp.Interpreter.interpret(List`1 statements) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Interpeter.cs:line 46
+   at LoxApp.Lox.run(String source) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Lox.cs:line 66
+   at LoxApp.Lox.runFile(String path) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Lox.cs:line 32
+   at LoxApp.Lox.Program.Main(String[] args) in C:\cygwin64\home\campb\cs403\LoxInterpreter\LoxApp\Lox.cs:line 22

@@ -12,7 +12,7 @@ namespace LoxApp
             this.declaration = declaration;
         }
 
-        public override string ToString(){
+        public string toString(){
             return "<fn " + declaration.name.lexeme + ">";
         }
 

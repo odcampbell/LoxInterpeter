@@ -11,6 +11,8 @@ namespace LoxApp
     {
         // System.Type t = typeof(void); 
         public readonly Environment globals = new Environment();
+        private readonly Dictionary<Expr, int> locals = new Dictionary<Expr, int>();
+
         private Environment environment;
 
         public Interpreter(){
@@ -66,12 +68,31 @@ namespace LoxApp
 
         
         public object VisitVariableExpr(Expr.Variable expr){
-            return environment.get(expr.name);
+            return lookUpVariable(expr.name, expr);
         }
 
+        private object lookUpVariable(Token name, Expr expr){
+            int? distance=null;
+            if(locals.ContainsKey(expr)){ //if expr found
+                distance = locals[expr]; //fingers crossed
+            }
 
-        private void checkNumberOperand(Token @operator, object operand)
-        {
+            // System.Console.WriteLine("NAME: " + name.lexeme + "   DISTANCE" + distance); //n
+            if (distance != null)
+            {
+#pragma warning disable CS8603 // Possible null reference return.
+            // System.Console.WriteLine("NAME: " + name.lexeme + "   DISTANCE" + distance); //n
+
+                return environment.getAt((int)distance, name.lexeme);
+#pragma warning restore CS8603 // Possible null reference return.
+            }
+            else
+            {
+                return globals.get(name);
+            }
+        }
+
+        private void checkNumberOperand(Token @operator, object operand){
             if (operand is double)
             {
                 return;
@@ -99,7 +120,7 @@ namespace LoxApp
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (text.EndsWith(".0"))
                 {
-                    text = text.Substring(0, text.Length - 2);
+                    text = text.Substring(0, text.Length - 2);//FIXME
                 }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                 return text;
@@ -121,13 +142,17 @@ namespace LoxApp
             stmt.Accept(this);
         }
 
+        public void resolve(Expr expr, int depth) {
+            // locals[expr] = depth;//
+            locals.Add(expr,depth);
+        }
+
         public void executeBlock(List<Stmt> statements, Environment environment){
             Environment previous = this.environment;
             try
             {
                 this.environment = environment;
-                foreach (Stmt statement in statements)
-                {
+                foreach (Stmt statement in statements){
                     execute(statement);
                 }
             }
@@ -139,6 +164,7 @@ namespace LoxApp
 
 
         public object VisitBlockStmt(Stmt.Block stmt){
+
             executeBlock(stmt.statements, new Environment(environment));
 #pragma warning disable CS8603 // Possible null reference return.
             return null;
@@ -184,9 +210,11 @@ namespace LoxApp
         }
 
         public object VisitReturnStmt(Stmt.Return stmt){
-            object value = null;
+            object? value = null;
             if (stmt.value != null) value = evaluate(stmt.value);
+#pragma warning disable CS8604 // Possible null reference argument.
             throw new Return(value);
+#pragma warning restore CS8604 // Possible null reference argument.
         }
 
 
@@ -197,6 +225,7 @@ namespace LoxApp
                 value = evaluate(stmt.initializer);
             }
 #pragma warning disable CS8604 // Possible null reference argument.
+
             environment.define(stmt.name.lexeme, value);
 #pragma warning restore CS8604 // Possible null reference argument.
 #pragma warning disable CS8603 // Possible null reference return.
@@ -217,13 +246,23 @@ namespace LoxApp
 
         public  object VisitAssignExpr(Expr.Assign expr){
             object value = evaluate(expr.value);
-            environment.assign(expr.name, value);
+            int distance = locals[expr];
+
+#pragma warning disable CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            if (distance != null) {
+                environment.assignAt(distance, expr.name, value);
+            } 
+#pragma warning restore CS0472 // The result of the expression is always the same since a value of this type is never equal to 'null'
+            else {
+                globals.assign(expr.name, value);
+            }
             return value;
         }
 
         public object VisitBinaryExpr(Expr.Binary expr){
-            object left = evaluate(expr.left);
-            object right = evaluate(expr.right);
+            object left = evaluate(expr.left);//evals n just fine 
+            object right = evaluate(expr.right); // evals 1 literal expr val
+            // Console.WriteLine ("POST EVALS: L: "+left+" R: "+right);
 
             switch (expr.@operator.type){
                 case TokenType.BANG_EQUAL: return !isEqual(left, right);
@@ -299,6 +338,7 @@ namespace LoxApp
 
         private void checkNumberOperands(Token @operator, object left, object right){
             if (left is double && right is double) return;
+            Console.WriteLine("Woops.. Type L "+left+": "+left.GetType().Name+ "  Type R "+right+": "+ right.GetType().Name);
             throw new RuntimeError(@operator, "Operands must be numbers.");
         }
 

@@ -18,7 +18,34 @@ namespace LoxApp
         }
 
         public void define(string name, object value){
+            // System.Console.WriteLine("NAME: " + name + "   VALUE" + value); //seems fine
+
             values[name] = value;
+        }
+
+        public Environment ancestor(int distance)
+        {
+            Environment? environment = this;
+            for (int i = 0; i < distance; i++)
+            {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                environment = environment.enclosing;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            }
+#pragma warning disable CS8603 // Possible null reference return.
+            return environment;
+#pragma warning restore CS8603 // Possible null reference return.
+        }
+
+        public object? getAt(int distance, string name){
+            // if(ancestor(distance).values.ContainsKey(name)){
+                return ancestor(distance).values[name];
+            // }
+            // return null; //not too happy about this one but what can ya do
+        }
+        
+        public void assignAt(int distance, Token name, object value){
+            ancestor(distance).values[name.lexeme] = value;
         }
 
         public object get(Token name){
