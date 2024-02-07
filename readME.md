@@ -1,7 +1,7 @@
 # Lox Interpeter
 ## Using C#
 
-Major Sources: 
+My Major Sources: 
 https://craftinginterpreters.com/scanning.html
 
 
